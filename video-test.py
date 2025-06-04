@@ -15,9 +15,15 @@ def process_video(video_path, model, output_csv, output_video=None):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
 
+    out = None
     if output_video:
+        # Assure-toi que le dossier existe
+        os.makedirs(os.path.dirname(output_video), exist_ok=True)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         out = cv2.VideoWriter(output_video, fourcc, fps, (640, 480))
+        if not out.isOpened():
+            print("❌ Erreur : Impossible d'ouvrir le fichier de sortie vidéo.")
+            return
 
     all_data = []
 
@@ -72,24 +78,31 @@ def process_video(video_path, model, output_csv, output_video=None):
             break
 
     cap.release()
-    if output_video:
+    if out:
         out.release()
     cv2.destroyAllWindows()
 
     # Save CSV
+    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
     df = pd.DataFrame(all_data)
     df.to_csv(output_csv, index=False)
-    print(f"Saved data to {output_csv}")
+    print(f"✅ Données enregistrées dans : {output_csv}")
+
+    # Vérifie si la vidéo a bien été créée
+    if output_video and os.path.exists(output_video):
+        print(f"✅ Vidéo enregistrée avec succès à : {output_video}")
+    elif output_video:
+        print("❌ Erreur : Le fichier vidéo n’a pas été trouvé après l’enregistrement.")
 
 if __name__ == "__main__":
-    video_path = 'video.mp4'
-    output_video = 'output.mp4'
-    output_csv = 'detection_stats.csv'
+    video_path = 'model/video.mp4'
+    output_video = 'model/output.mp4'
+    output_csv = 'model/detection_stats.csv'
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Using device: {device}")
+    print(f"🖥️ Utilisation du device : {device}")
 
-    model = YOLO("yolov8m-football.pt")
+    model = YOLO("model/yolov8m-football.pt")
 
     if device == "cuda":
         model.model.half()
