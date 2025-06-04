@@ -112,6 +112,10 @@ Feel free to submit:
 * Issues for bugs or feature suggestions
 * Custom models for other sports
 
+## 📬 Contact
+
+**Email:** [zahdineamine23@gmail.com](mailto:zahdineamine23@gmail.com)
+**GitHub:** [zahdineamine2003](https://github.com/zahdineamine2003)
 
 
 
